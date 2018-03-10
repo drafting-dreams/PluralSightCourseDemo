@@ -85,7 +85,6 @@ class CourseApi {
           course.watchHref = `http://www.pluralsight.com/courses/${course.id}`;
           courses.push(course);
         }
-
         resolve(course);
       }, delay);
     });
