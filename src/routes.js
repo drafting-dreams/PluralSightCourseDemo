@@ -4,7 +4,10 @@ import App from './components/app';
 import AboutPage from './components/about/AboutPage';
 import HomePage from './components/home/HomePage';
 import CoursesPage from './components/courses/CoursesPage';
+/*eslint-disable*/
 import ManageCoursePage from "./components/courses/ManageCoursePage";
+/*eslint-enable*/
+
 
 export default (
   <Route path="/" component={App}>

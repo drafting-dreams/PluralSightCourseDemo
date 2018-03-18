@@ -10,7 +10,7 @@ function setup(saving=false) {
     },
     onChange: () => {
     }
-  }
+  };
 
   let renderer = TestUtils.createRenderer();
   renderer.render(<CourseForm {...props}/>);
@@ -20,7 +20,7 @@ function setup(saving=false) {
     props,
     output,
     renderer
-  }
+  };
 }
 
 describe('CourseFrom via React Test Utils', () => {

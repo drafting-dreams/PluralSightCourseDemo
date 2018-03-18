@@ -4,13 +4,15 @@ import {connect} from 'react-redux';
 import toastr from 'toastr';
 import * as courseActions from '../../actions/courseActions';
 import CourseForm from './CourseForm';
+import {authorsFormattedForDropDown} from "../../selectors/selector";
 
-class ManageCoursePage extends React.Component {
+export class ManageCoursePage extends React.Component {
     constructor(props, context) {
         super(props, context);
 
         this.state = {
           course: Object.assign({}, this.props.course),
+          //defaultAuthor: this.props.defaultAuthor,
           errors: {},
           saving: false
         };
@@ -21,20 +23,45 @@ class ManageCoursePage extends React.Component {
 
     componentWillReceiveProps(nextProps) {
       if(this.props.id !== nextProps.course.id) {
-        this.setState({course: Object.assign({}, nextProps.course)});
+        this.setState({
+          course: Object.assign({}, nextProps.course),
+          defaultAuthor: nextProps.defaultAuthor
+        });
       }
     }
 
 
     updateCourseState(event) {
       const field = event.target.name;
+      //if(field ==='authorId'){this.props.defaultAuthor=event.target.value;}
       let course = Object.assign({}, this.state.course);
       course[field] = event.target.value;
-      return this.setState({course: course});
+      return this.setState({
+        course: course,
+        //defaultAuthor: this.props.defaultAuthor
+      });
+    }
+
+    //updatAuthorState(event)
+
+    courseFormIsValid() {
+      let formIsValid = true;
+      let errors = {};
+
+      if(this.state.course.title.length<5) {
+        errors.title = 'Title must be at least 5 characters';
+        formIsValid = false;
+      }
+
+      this.setState({errors: errors});
+      return formIsValid;
     }
 
     saveCourse(event) {
       event.preventDefault();
+      if(!this.courseFormIsValid()) {
+        return;
+      }
       this.setState({saving: true});
       this.props.actions.saveCourse(this.state.course)
         .then(() => this.redirect())
@@ -67,6 +94,7 @@ class ManageCoursePage extends React.Component {
 ManageCoursePage.propTypes = {
   course: PropTypes.object.isRequired,
   authors: PropTypes.array.isRequired,
+  //defaultAuthor: PropTypes.string.isRequired,
   actions: PropTypes.object.isRequired,
   id: PropTypes.string
 };
@@ -82,6 +110,12 @@ function getCourseById(courses, id) {
   return null;
 }
 
+function getAuthorByAuthorId(id, authors) {
+  const author = authors.filter(author => id === author.value);
+  if (author) return author[0];
+  return null;
+}
+
 function mapStateToProps(state, ownProps) {
   let course = {id: '', watchHref: '', title: '', authorId: '', length: '', category: ''};
   const courseId = ownProps.params.id;  //from the path '/course/:id'
@@ -89,16 +123,18 @@ function mapStateToProps(state, ownProps) {
     course = getCourseById(state.courses, courseId);
   }
 
-  const authorsFormattedForDropDown = state.authors.map(author => {
-    return {
-      value: author.id,
-      text: author.firstName + ' ' + author.lastName
-    };
-  });
+  const formattedAuthors = authorsFormattedForDropDown(state.authors);
+  // let defaultAuthor = "Select Author";
+  // if(formattedAuthors && course.id) {
+  //   const gottenAuthor = getAuthorByAuthorId(course.authorId, formattedAuthors);
+  //   defaultAuthor = gottenAuthor ? gottenAuthor.text : "SelectAuthor";
+  // }
+
 
   return {
     course: course,
-    authors: authorsFormattedForDropDown
+    authors: formattedAuthors,
+    //defaultAuthor: defaultAuthor
   };
 }
 

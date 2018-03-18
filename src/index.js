@@ -1,3 +1,4 @@
+/*eslint-disable import/default */
 import "babel-polyfill";
 import React from "react";
 import { render } from "react-dom";
@@ -19,7 +20,9 @@ store.dispatch(loadAuthors());
 
 render(
   <Provider store = {store}>
-    <Router history={browserHistory} routes={routes} />
+    <div>
+      <Router history={browserHistory} routes={routes} />
+    </div>
   </Provider>,
   document.getElementById('app')
 );
